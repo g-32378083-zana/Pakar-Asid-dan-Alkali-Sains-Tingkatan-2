@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabaran Sains Tingkatan 2: Asid dan Alkali</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        acid: {
+                            light: '#ff4d6d',
+                            DEFAULT: '#ff0054',
+                            dark: '#9e0059'
+                        },
+                        alkali: {
+                            light: '#3a86ff',
+                            DEFAULT: '#0077b6',
+                            dark: '#03045e'
+                        },
+                        lab: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#10b981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            user-select: none;
+        }
+
+        /* Bubble Animation Background */
+        .bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: rise 10s infinite ease-in-out;
+        }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0.2; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-1000px) scale(1.2); opacity: 0; }
+        }
+
+        /* Shimmer effect for correct options */
+        .correct-anim {
+            animation: pulse-green 0.5s ease-in-out;
+        }
+        .wrong-anim {
+            animation: shake-red 0.5s ease-in-out;
+        }
+        @keyframes pulse-green {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        @keyframes shake-red {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative font-sans overflow-x-hidden">
+
+    <!-- Ambient Bubbles -->
+    <div class="bubbles" id="bubbles-container"></div>
+
+    <!-- Header / Navbar -->
+    <header class="relative z-10 w-full max-w-4xl mx-auto p-4 flex justify-between items-center border-b border-slate-700/50">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                <i class="fa-solid fa-flask-vial text-xl animate-bounce"></i>
+            </div>
+            <div>
+                <h1 class="font-display font-bold text-lg md:text-xl text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-400">
+                    Lab Sains T2
+                </h1>
+                <p class="text-xs text-slate-400">Bab 6: Asid & Alkali</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="sound-btn" onclick="toggleSound()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-sm flex items-center gap-2 border border-slate-700">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-cyan-400"></i>
+                <span class="hidden sm:inline text-xs">Bunyi</span>
+            </button>
+            <button onclick="showLeaderboardModal()" class="px-3 py-2 rounded-lg bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 transition text-sm flex items-center gap-2 border border-yellow-500/30">
+                <i class="fa-solid fa-trophy"></i>
+                <span class="hidden sm:inline text-xs font-semibold">Ranking</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="relative z-10 w-full max-w-3xl mx-auto px-4 py-6 flex-grow flex flex-col justify-center">
+
+        <!-- SCREEN 1: WELCOME / START -->
+        <div id="screen-start" class="glass-panel rounded-3xl p-6 md:p-8 text-center shadow-2xl space-y-6">
+            <div class="inline-block p-4 rounded-full bg-slate-800/80 border border-slate-700 mb-2">
+                <i class="fa-solid fa-atom text-5xl text-cyan-400"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl md:text-4xl font-display font-bold text-white mb-2">
+                    Cabaran Asid & Alkali
+                </h2>
+                <p class="text-slate-300 text-sm md:text-base max-w-md mx-auto">
+                    Uji pengetahuan Sains Tingkatan 2 anda dengan 30 soalan pelbagai aras! Kumpul mata, kekalkan <span class="text-amber-400 font-bold">Streak</span>, dan capai gelaran Profesor Kimia!
+                </p>
+            </div>
+
+            <!-- Player Input Form -->
+            <div class="space-y-4 max-w-md mx-auto text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Nama Murid</label>
+                    <input type="text" id="input-name" placeholder="cth. Ahmad Zaki" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white focus:outline-none focus:border-cyan-400 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Kelas</label>
+                    <input type="text" id="input-class" placeholder="cth. 2 Bestari" class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white focus:outline-none focus:border-cyan-400 transition">
+                </div>
+            </div>
+
+            <!-- Rules Summary -->
+            <div class="grid grid-cols-3 gap-2 py-2 text-center text-xs text-slate-300 max-w-md mx-auto">
+                <div class="p-2 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                    <i class="fa-solid fa-list-check text-cyan-400 text-base mb-1 block"></i>
+                    30 Soalan
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                    <i class="fa-solid fa-clock text-amber-400 text-base mb-1 block"></i>
+                    25s / Soalan
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                    <i class="fa-solid fa-bolt text-pink-400 text-base mb-1 block"></i>
+                    Bonus Streak
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="w-full max-w-md py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 font-display font-bold text-lg text-white shadow-lg shadow-cyan-500/25 hover:opacity-95 transform hover:-translate-y-0.5 active:translate-y-0 transition">
+                <i class="fa-solid fa-play mr-2"></i> MULA PERMAINAN
+            </button>
+        </div>
+
+        <!-- SCREEN 2: GAMEPLAY -->
+        <div id="screen-game" class="hidden space-y-4">
+            
+            <!-- Top Stats Bar -->
+            <div class="glass-panel rounded-2xl p-4 flex justify-between items-center text-sm font-semibold">
+                <!-- Question Counter -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs uppercase text-slate-400">Soalan</span>
+                    <span id="q-counter" class="text-cyan-400 font-display font-bold text-lg">1/30</span>
+                </div>
+
+                <!-- Timer Ring/Bar -->
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-stopwatch text-amber-400"></i>
+                    <span id="timer-text" class="text-amber-400 font-mono text-base font-bold">25s</span>
+                </div>
+
+                <!-- Streak & Score -->
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1 text-orange-400" title="Streak Berganda">
+                        <i class="fa-solid fa-fire animate-pulse"></i>
+                        <span id="streak-counter" class="font-bold">0</span>
+                    </div>
+                    <div class="flex items-center gap-1 text-emerald-400">
+                        <i class="fa-solid fa-star"></i>
+                        <span id="score-display" class="font-bold text-lg">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="glass-panel rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                <!-- Level Badge -->
+                <div class="flex justify-between items-center">
+                    <span id="badge-level" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+                        Mudah
+                    </span>
+                    <span id="badge-topic" class="text-xs text-slate-400 font-medium">
+                        Sifat Asid & Alkali
+                    </span>
+                </div>
+
+                <!-- Question Text -->
+                <h3 id="question-text" class="text-lg md:text-xl font-bold text-white leading-relaxed">
+                    Memuatkan soalan...
+                </h3>
+
+                <!-- Options Area (Dynamic for MC, TF, Categorize, or Ordering) -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <!-- Dynamic choices inserted via JS -->
+                </div>
+
+                <!-- Immediate Explanation Box (Initially Hidden) -->
+                <div id="explanation-box" class="hidden p-4 rounded-2xl bg-slate-800/90 border border-slate-700 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-sm" id="explanation-header">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Penjelasan</span>
+                    </div>
+                    <p id="explanation-text" class="text-xs md:text-sm text-slate-300 leading-relaxed"></p>
+                    <div class="pt-2 flex justify-end">
+                        <button onclick="nextQuestion()" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition">
+                            <span>Seterusnya</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS / END SCREEN -->
+        <div id="screen-results" class="hidden glass-panel rounded-3xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
+            <!-- Rank Badge Icon -->
+            <div class="relative inline-block">
+                <div id="res-badge-bg" class="w-24 h-24 rounded-full bg-gradient-to-tr from-yellow-400 to-amber-600 flex items-center justify-center mx-auto shadow-xl shadow-amber-500/20">
+                    <i id="res-badge-icon" class="fa-solid fa-award text-4xl text-slate-950"></i>
+                </div>
+            </div>
+
+            <div>
+                <span id="res-rank-title" class="inline-block px-4 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs font-bold uppercase tracking-wider mb-2 border border-yellow-500/30">
+                    Pakar Kimia Junior
+                </span>
+                <h2 class="text-3xl font-display font-bold text-white">Tahniah, <span id="res-name">Murid</span>!</h2>
+                <p class="text-xs text-slate-400" id="res-class">Kelas 2 Bestari</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+                <div class="p-3 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+                    <span class="text-xs text-slate-400 block">Jumlah Markah</span>
+                    <span id="res-score" class="text-xl font-bold text-emerald-400">0</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+                    <span class="text-xs text-slate-400 block">Ketepatan</span>
+                    <span id="res-accuracy" class="text-xl font-bold text-cyan-400">0%</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+                    <span class="text-xs text-slate-400 block">Masa Diambil</span>
+                    <span id="res-time" class="text-xl font-bold text-amber-400">0s</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+                    <span class="text-xs text-slate-400 block">Max Streak</span>
+                    <span id="res-max-streak" class="text-xl font-bold text-pink-400">0</span>
+                </div>
+            </div>
+
+            <!-- WhatsApp & Action Buttons -->
+            <div class="space-y-3 max-w-md mx-auto pt-2">
+                <button onclick="shareToWhatsApp()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 transition">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>Kongsi Keputusan ke WhatsApp</span>
+                </button>
+                <div class="flex gap-3">
+                    <button onclick="restartGame()" class="w-1/2 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Cuba Lagi</span>
+                    </button>
+                    <button onclick="showLeaderboardModal()" class="w-1/2 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-yellow-400 font-semibold border border-slate-700 transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Papan Pendahulu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Leaderboard -->
+    <div id="modal-leaderboard" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl relative border border-slate-700">
+            <button onclick="closeLeaderboardModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-trophy text-yellow-400 text-2xl"></i>
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white">Papan Pendahulu (Top Murid)</h3>
+                    <p class="text-xs text-slate-400">Ranking tersimpan dalam peranti</p>
+                </div>
+            </div>
+
+            <!-- Leaderboard List -->
+            <div id="leaderboard-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <!-- JS populated -->
+            </div>
+
+            <button onclick="closeLeaderboardModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 w-full text-center py-3 text-xs text-slate-500 border-t border-slate-800/60">
+        Direka untuk Pembelajaran Sains Tingkatan 2 • Bab 6 Asid dan Alkali
+    </footer>
+
+    <!-- Audio Effects using Web Audio API Synthesizer -->
+    <script>
+        // Sound FX System using Web Audio API
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(120, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'win') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.1);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                osc.frequency.setValueAtTime(880, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-cyan-400';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+            }
+        }
+    </script>
+
+    <!-- Main Game Logic & Questions Database -->
+    <script>
+        // 30 Complete Form 2 Science Chapter 6 (Acid & Alkali) Questions
+        const questionsDatabase = [
+            // Sifat Asid & Alkali
+            {
+                id: 1,
+                topic: "Sifat Asid & Alkali",
+                level: "Rendah",
+                format: "mc",
+                question: "Apakah rasa bagi bahan berasid seperti jus lemon dan cuka?",
+                options: ["Pahit", "Masam", "Manis", "Masin"],
+                answer: 1,
+                explanation: "Asid secara amnya mempunyai rasa masam (cth. jus oren, cuka, asam jawa)."
+            },
+            {
+                id: 2,
+                topic: "Sifat Asid & Alkali",
+                level: "Rendah",
+                format: "mc",
+                question: "Bahan beralkali seperti sabun berasa ________ dan mempunyai rasa ________.",
+                options: ["kasar ; masam", "licin ; pahit", "kesat ; manis", "licin ; masin"],
+                answer: 1,
+                explanation: "Alkali berasa licin apabila disentuh dengan jari dan mempunyai rasa pahit."
+            },
+            {
+                id: 3,
+                topic: "Kertas Litmus",
+                level: "Rendah",
+                format: "tf",
+                question: "Asid menukarkan warna kertas litmus merah kepada biru.",
+                options: ["Benar", "Palsu"],
+                answer: 1, // Palsu
+                explanation: "Palsu! Asid menukarkan kertas litmus BIRU kepada MERAH. Alkali menukarkan litmus MERAH kepada BIRU."
+            },
+            {
+                id: 4,
+                topic: "Peranan Air",
+                level: "Sederhana",
+                format: "mc",
+                question: "Mengapakah asid etanoik kering tanpa air tidak menunjukkan sifat berasid?",
+                options: [
+                    "Sebab asid menjadi terlalu pekat",
+                    "Ion hidroksida tidak dapat bergerak",
+                    "Ion hidrogen hanya terbentuk dengan kehadiran air",
+                    "Air bertindak sebagai agen peneutralan"
+                ],
+                answer: 2,
+                explanation: "Asid dan alkali HANYA menunjukkan sifat berasid/beralkali dengan kehadiran AIR kerana air membolehkan pembentukan ion."
+            },
+            {
+                id: 5,
+                topic: "Skala pH",
+                level: "Rendah",
+                format: "mc",
+                question: "Berapakah julat nilai pH bagi larutan yang beralkali?",
+                options: ["pH 1 hingga 6", "pH 7 sahaja", "pH 8 hingga 14", "pH 0 hingga 14"],
+                answer: 2,
+                explanation: "Skala pH: 1-6 = Asid, 7 = Neutral, 8-14 = Alkali."
+            },
+            {
+                id: 6,
+                topic: "Skala pH",
+                level: "Sederhana",
+                format: "mc",
+                question: "Manakah antara berikut mempunyai nilai pH yang paling asid (asid kuat)?",
+                options: ["pH 6", "pH 4", "pH 1", "pH 7"],
+                answer: 2,
+                explanation: "Semakin rendah nilai pH (mendekati 1), semakin kuat sifat asid larutan tersebut."
+            },
+            {
+                id: 7,
+                topic: "Penunjuk Kimia",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah warna fenolftalein apabila dititiskan ke dalam larutan natrium hidroksida (alkali)?",
+                options: ["Merah Jambu", "Tanpa Warna", "Kuning", "Hijau"],
+                answer: 0,
+                explanation: "Fenolftalein bertukar warna menjadi MERAH JAMBU dalam alkali, dan tidak berwarna dalam asid atau neutral."
+            },
+            {
+                id: 8,
+                topic: "Kegunaan Harian",
+                level: "Rendah",
+                format: "mc",
+                question: "Bahan manakah yang mengandungi alkali dan digunakan untuk membersihkan gigi?",
+                options: ["Cuka", "Ubat Gigi", "Jus Oren", "Sos Cili"],
+                answer: 1,
+                explanation: "Ubat gigi beralkali lemah untuk meneutralkan asid yang dihasilkan oleh bakteria pada gigi."
+            },
+            {
+                id: 9,
+                topic: "Peneutralan",
+                level: "Sederhana",
+                format: "mc",
+                question: "Tindak balas peneutralan antara Asid + Alkali akan menghasilkan ________ + ________.",
+                options: ["Garam + Air", "Gas Hidrogen + Garam", "Karbon Dioksida + Air", "Gula + Air"],
+                answer: 0,
+                explanation: "Asid + Alkali → Garam + Air. Ini dinamakan tindak balas Peneutralan."
+            },
+            {
+                id: 10,
+                topic: "Aplikasi Peneutralan",
+                level: "Tinggi",
+                format: "mc",
+                question: "Sengatan lebah bersifat berasid. Apakah bahan yang paling sesuai disapu pada kulit untuk melegakan kesakitan?",
+                options: ["Cuka", "Jus Lemon", "Serbuk Menaik / Baking Soda (Alkali)", "Air garam"],
+                answer: 2,
+                explanation: "Sengatan lebah berasid dineutralkan dengan alkali lemah seperti serbuk menaik (baking soda) atau losyen calamine."
+            },
+            {
+                id: 11,
+                topic: "Aplikasi Peneutralan",
+                level: "Tinggi",
+                format: "mc",
+                question: "Sengatan tebu/tebuan bersifat BERALKALI. Bahan apakah yang sesuai digunakan untuk merawatnya?",
+                options: ["Ubat gigi", "Cuka (Asid)", "Sabun mandi", "Kapur mati"],
+                answer: 1,
+                explanation: "Sengatan tebuan beralkali, maka ia perlu dineutralkan menggunakan asid lemah seperti cuka."
+            },
+            {
+                id: 12,
+                topic: "Kegunaan Harian",
+                level: "Sederhana",
+                format: "cat",
+                question: "Kelaskan bahan ini: 'Susu Magnesia / Antasid (Ubat Gastrik)'",
+                options: ["Asid", "Alkali", "Neutral"],
+                answer: 1,
+                explanation: "Susu magnesia bersifat alkali untuk meneutralkan asid hidroklorik berlebihan dalam perut pesakit gastrik."
+            },
+            {
+                id: 13,
+                topic: "Kegunaan Harian",
+                level: "Sederhana",
+                format: "cat",
+                question: "Kelaskan bahan ini: 'Minuman Berkarbonat (Gas)'",
+                options: ["Asid", "Alkali", "Neutral"],
+                answer: 0,
+                explanation: "Minuman berkarbonat mengandungi asid karbonik (berasid)."
+            },
+            {
+                id: 14,
+                topic: "Peranan Air",
+                level: "Tinggi",
+                format: "tf",
+                question: "Gas amonia kering boleh menukarkan warna kertas litmus merah kering kepada biru.",
+                options: ["Benar", "Palsu"],
+                answer: 1, // Palsu
+                explanation: "Palsu! Tanpa kehadiran air, amonia kering tidak membebaskan ion hidroksida, maka litmus tidak bertukar warna."
+            },
+            {
+                id: 15,
+                topic: "Penunjuk Kimia",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah warna Penunjuk Semesta dalam larutan bernilai pH 7 (Neutral)?",
+                options: ["Merah", "Kuning", "Hijau", "Ungu"],
+                answer: 2,
+                explanation: "Penunjuk Semesta berwarna HIJAU pada pH 7 (Neutral), Merah pada Asid Kuat, dan Ungu pada Alkali Kuat."
+            },
+            {
+                id: 16,
+                topic: "Tindak Balas Kimia",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah yang terhasil apabila asid bertindak balas dengan logam seperti zink?",
+                options: ["Gas Oksigen", "Gas Hidrogen", "Gas Karbon Dioksida", "Air sahaja"],
+                answer: 1,
+                explanation: "Asid + Logam → Garam + Gas Hidrogen (ditunjukkan dengan bunyi 'pop' apabila diuji kayu uji bernyala)."
+            },
+            {
+                id: 17,
+                topic: "Tindak Balas Kimia",
+                level: "Tinggi",
+                format: "mc",
+                question: "Asid bertindak balas dengan kalsium karbonat (cangkerang telur) menghasilkan gas yang mengeruhkan air kapur. Apakah gas tersebut?",
+                options: ["Gas Oksigen", "Gas Nitrogen", "Gas Karbon Dioksida", "Gas Hidrogen"],
+                answer: 2,
+                explanation: "Asid + Karbonat Logam → Garam + Air + Gas Karbon Dioksida."
+            },
+            {
+                id: 18,
+                topic: "Pertanian",
+                level: "Tinggi",
+                format: "mc",
+                question: "Tanah pertanian yang terlalu berasid tidak subur untuk tanaman. Apakah yang ditambah oleh petani untuk merawat tanah tersebut?",
+                options: ["Baja nitrogen", "Kapur mati / Kalsium hidroksida (Alkali)", "Cuka", "Asid sulfurik"],
+                answer: 1,
+                explanation: "Petani menambah kapur mati (alkali) untuk meneutralkan asid berlebihan pada tanah."
+            },
+            {
+                id: 19,
+                topic: "Penjagaan Diri",
+                level: "Sederhana",
+                format: "mc",
+                question: "Syampu rambut bersifat sedikit beralkali dan menyebabkan rambut kasar. Mengapakah pelembut rambut (conditioner) yang sedikit berasid digunakan?",
+                options: ["Untuk membersihkan daki", "Untuk meneutralkan sisa syampu dan melembutkan rambut", "Untuk mewarnakan rambut", "Untuk membunuh kuman"],
+                answer: 1,
+                explanation: "Pelembut rambut (asid lemah) meneutralkan alkali pada syampu, menjadikan kutikel rambut licin dan lembut."
+            },
+            {
+                id: 20,
+                topic: "Skala pH",
+                level: "Rendah",
+                format: "tf",
+                question: "Nilai pH 14 menunjukkan suatu larutan merupakan alkali yang sangat kuat.",
+                options: ["Benar", "Palsu"],
+                answer: 0, // Benar
+                explanation: "Benar! pH 14 adalah nilai maksimum pada skala pH yang mewakili alkali paling kuat (cth: Natrium hidroksida pekat)."
+            },
+            {
+                id: 21,
+                topic: "Industri",
+                level: "Tinggi",
+                format: "mc",
+                question: "Gas berasid seperti sulfur dioksida dari kilang dibebaskan ke udara. Apakah aplikasi peneutralan yang digunakan di cerobong kilang?",
+                options: ["Menyembur air suling", "Menggunakan kapur cair (alkali) untuk menyerap gas berasid", "Membakar semula gas", "Menyejukkan udara"],
+                answer: 1,
+                explanation: "Peneutralan gas berasid di cerobong kilang menggunakan kapur cair mengurangkan fenomena Hujan Asid."
+            },
+            {
+                id: 22,
+                topic: "Penunjuk Kimia",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah warna metil jingga dalam larutan berasid?",
+                options: ["Kuning", "Merah", "Biru", "Hijau"],
+                answer: 1,
+                explanation: "Metil jingga berwarna MERAH dalam asid dan KUNING dalam larutan beralkali."
+            },
+            {
+                id: 23,
+                topic: "Penyediaan Larutan",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah kaedah makmal yang digunakan untuk menjalankan tindak balas peneutralan sukatan pasti?",
+                options: ["Penurunan", "Pentaksiran", "Pentitratan", "Pengewapan"],
+                answer: 2,
+                explanation: "Pentitratan (Titration) menggunakan buret dan kelalang kon adalah kaedah khusus peneutralan."
+            },
+            {
+                id: 24,
+                topic: "Sifat Asid & Alkali",
+                level: "Rendah",
+                format: "cat",
+                question: "Kelaskan bahan ini: 'Jus Perah Limau Nipis'",
+                options: ["Asid", "Alkali", "Neutral"],
+                answer: 0,
+                explanation: "Jus limau nipis mengandungi asid sitrik (pH < 7)."
+            },
+            {
+                id: 25,
+                topic: "Sifat Asid & Alkali",
+                level: "Rendah",
+                format: "cat",
+                question: "Kelaskan bahan ini: 'Peluntur Rumah / Peluncur Dapur'",
+                options: ["Asid", "Alkali", "Neutral"],
+                answer: 1,
+                explanation: "Peluntur dan pembersih rumah biasanya beralkali kuat untuk melarutkan lemak dan kotoran."
+            },
+            {
+                id: 26,
+                topic: "Kekonduksian Elektrik",
+                level: "Tinggi",
+                format: "tf",
+                question: "Asid dan alkali dapat mengalirkan arus elektrik dengan kehadiran air.",
+                options: ["Benar", "Palsu"],
+                answer: 0, // Benar
+                explanation: "Benar! Kehadiran air membolehkan asid dan alkali mengion dan menghasilkan ion bebas bergerak untuk mengalirkan elektrik."
+            },
+            {
+                id: 27,
+                topic: "Makanan & Kesihatan",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah asid semula jadi yang terdapat di dalam cuka makan?",
+                options: ["Asid Hidroklorik", "Asid Etanoik (Asid Asetik)", "Asid Sulfurik", "Asid Nitrik"],
+                answer: 1,
+                explanation: "Cuka makan mengandungi asid etanoik cair."
+            },
+            {
+                id: 28,
+                topic: "Makanan & Kesihatan",
+                level: "Sederhana",
+                format: "mc",
+                question: "Apakah jenis asid yang dihasilkan di dalam perut manusia untuk mencernakan makanan?",
+                options: ["Asid Etanoik", "Asid Hidroklorik", "Asid Sitrik", "Asid Tartarik"],
+                answer: 1,
+                explanation: "Perut manusia merembeskan Asid Hidroklorik untuk mencernakan protein dan membunuh bakteria."
+            },
+            {
+                id: 29,
+                topic: "Sifat Asid & Alkali",
+                level: "Rendah",
+                format: "cat",
+                question: "Kelaskan bahan ini: 'Air Suling'",
+                options: ["Asid", "Alkali", "Neutral"],
+                answer: 2,
+                explanation: "Air suling adalah bahan neutral dengan pH tepat 7."
+            },
+            {
+                id: 30,
+                topic: "KBAT / Peneutralan",
+                level: "Tinggi",
+                format: "mc",
+                question: "Seseorang mengalami sakit pedih ulu hati akibat gastric juice. Apakah tindakan penyelesaian yang paling saintifik?",
+                options: [
+                    "Minum cuka limau untuk menghakis jus gastrik",
+                    "Minum larutan antasid (alkali lemah) untuk meneutralkan asid perut",
+                    "Minum air berkarbonat berkuantiti banyak",
+                    "Makan makanan kaya dengan asid sitrik"
+                ],
+                answer: 1,
+                explanation: "Antasid mengandungi alkali lemah (seperti magnesium hidroksida) yang meneutralkan asid perut berlebihan secara selamat."
+            }
+        ];
+
+        // Game State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let timer = null;
+        let timeLeft = 25;
+        let totalTimeSpent = 0;
+        let timeInterval = null;
+        let playerName = "";
+        let playerClass = "";
+        let answersHistory = [];
+
+        // Generate Background Floating Bubbles
+        function generateBubbles() {
+            const container = document.getElementById('bubbles-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 40 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.animationDuration = `${Math.random() * 8 + 6}s`;
+                bubble.style.animationDelay = `${Math.random() * 4}s`;
+                container.appendChild(bubble);
+            }
+        }
+
+        // Start Game Handler
+        function startGame() {
+            const nameInput = document.getElementById('input-name').value.trim();
+            const classInput = document.getElementById('input-class').value.trim();
+
+            if (!nameInput) {
+                alert("Sila masukkan Nama Murid terlebih dahulu!");
+                return;
+            }
+
+            playerName = nameInput;
+            playerClass = classInput || "Tingkatan 2";
+            playSound('click');
+
+            // Reset Game Variables
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            totalTimeSpent = 0;
+            answersHistory = [];
+
+            // Switch Screen
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        // Load Question UI
+        function loadQuestion() {
+            if (currentQuestionIndex >= questionsDatabase.length) {
+                endGame();
+                return;
+            }
+
+            const q = questionsDatabase[currentQuestionIndex];
+
+            // Reset UI states
+            document.getElementById('explanation-box').classList.add('hidden');
+            document.getElementById('q-counter').innerText = `${currentQuestionIndex + 1}/${questionsDatabase.length}`;
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('streak-counter').innerText = streak;
+            
+            // Progress Bar
+            const progress = ((currentQuestionIndex) / questionsDatabase.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Badge Level Styling
+            const badgeLevel = document.getElementById('badge-level');
+            badgeLevel.innerText = q.level;
+            if (q.level === 'Rendah') {
+                badgeLevel.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            } else if (q.level === 'Sederhana') {
+                badgeLevel.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30';
+            } else {
+                badgeLevel.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-pink-500/20 text-pink-400 border border-pink-500/30';
+            }
+
+            document.getElementById('badge-topic').innerText = q.topic;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Generate Options Buttons
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-left font-medium text-sm text-slate-100 transition flex items-center justify-between group';
+                btn.onclick = () => selectAnswer(index);
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-slate-700 group-hover:bg-cyan-500 group-hover:text-slate-950 flex items-center justify-center font-bold text-xs transition">
+                            ${String.fromCharCode(65 + index)}
+                        </span>
+                        <span>${opt}</span>
+                    </span>
+                    <i class="fa-regular fa-circle text-slate-500 group-hover:text-cyan-400"></i>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Start Question Timer (25 seconds)
+            startTimer();
+        }
+
+        // Timer Function
+        function startTimer() {
+            clearInterval(timeInterval);
+            timeLeft = 25;
+            document.getElementById('timer-text').innerText = `${timeLeft}s`;
+
+            timeInterval = setInterval(() => {
+                timeLeft--;
+                totalTimeSpent++;
+                document.getElementById('timer-text').innerText = `${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timeInterval);
+                    selectAnswer(-1); // Time out
+                }
+            }, 1000);
+        }
+
+        // Handle Answer Selection
+        function selectAnswer(selectedIndex) {
+            clearInterval(timeInterval);
+
+            const q = questionsDatabase[currentQuestionIndex];
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (selectedIndex === q.answer);
+
+            if (isCorrect) {
+                playSound('correct');
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+
+                // Score Calculation: Base 100 + Streak bonus + Time bonus
+                const timeBonus = timeLeft * 2;
+                const streakBonus = (streak > 1) ? (streak * 20) : 0;
+                const pointsEarned = 100 + timeBonus + streakBonus;
+                score += pointsEarned;
+
+                if (selectedIndex >= 0) {
+                    buttons[selectedIndex].classList.remove('bg-slate-800/80', 'border-slate-700');
+                    buttons[selectedIndex].classList.add('bg-emerald-600/30', 'border-emerald-500', 'correct-anim');
+                    buttons[selectedIndex].querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+                }
+            } else {
+                playSound('wrong');
+                streak = 0;
+
+                if (selectedIndex >= 0) {
+                    buttons[selectedIndex].classList.remove('bg-slate-800/80', 'border-slate-700');
+                    buttons[selectedIndex].classList.add('bg-pink-600/30', 'border-pink-500', 'wrong-anim');
+                    buttons[selectedIndex].querySelector('i').className = 'fa-solid fa-circle-xmark text-pink-400 text-lg';
+                }
+
+                // Highlight Correct Option
+                buttons[q.answer].classList.remove('bg-slate-800/80', 'border-slate-700');
+                buttons[q.answer].classList.add('bg-emerald-600/20', 'border-emerald-500/50');
+            }
+
+            answersHistory.push({
+                question: q.question,
+                isCorrect: isCorrect
+            });
+
+            // Show Explanation Box
+            const expBox = document.getElementById('explanation-box');
+            const expHeader = document.getElementById('explanation-header');
+            const expText = document.getElementById('explanation-text');
+
+            if (isCorrect) {
+                expHeader.className = 'flex items-center gap-2 font-bold text-sm text-emerald-400';
+                expHeader.innerHTML = `<i class="fa-solid fa-circle-check"></i> TEPAT SELESAI! (+${100 + (timeLeft * 2) + ((streak > 1)?(streak*20):0)} MATA)`;
+            } else {
+                expHeader.className = 'flex items-center gap-2 font-bold text-sm text-pink-400';
+                expHeader.innerHTML = (selectedIndex === -1) 
+                    ? `<i class="fa-solid fa-clock"></i> MASA TAMAT!` 
+                    : `<i class="fa-solid fa-circle-xmark"></i> JAWAPAN KURANG TEPAT`;
+            }
+
+            expText.innerText = q.explanation;
+            expBox.classList.remove('hidden');
+        }
+
+        // Advance to Next Question
+        function nextQuestion() {
+            playSound('click');
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        // End Game & Display Results
+        function endGame() {
+            playSound('win');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            const totalQ = questionsDatabase.length;
+            const correctCount = answersHistory.filter(a => a.isCorrect).length;
+            const accuracyPercent = Math.round((correctCount / totalQ) * 100);
+
+            document.getElementById('res-name').innerText = playerName;
+            document.getElementById('res-class').innerText = `Kelas: ${playerClass}`;
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-accuracy').innerText = `${accuracyPercent}%`;
+            document.getElementById('res-time').innerText = `${totalTimeSpent}s`;
+            document.getElementById('res-max-streak').innerText = maxStreak;
+
+            // Rank Badge Assignment based on score & accuracy
+            let rankTitle = "Murid Putik Sains";
+            let rankIcon = "fa-flask";
+            let badgeBg = "from-slate-600 to-slate-800";
+
+            if (accuracyPercent >= 90) {
+                rankTitle = "Profesor Sains Asid & Alkali";
+                rankIcon = "fa-crown";
+                badgeBg = "from-yellow-400 to-amber-600";
+            } else if (accuracyPercent >= 75) {
+                rankTitle = "Master Kimia Makmal";
+                rankIcon = "fa-award";
+                badgeBg = "from-purple-500 to-indigo-600";
+            } else if (accuracyPercent >= 50) {
+                rankTitle = "Pakar Kimia Junior";
+                rankIcon = "fa-flask-vial";
+                badgeBg = "from-cyan-500 to-blue-600";
+            }
+
+            document.getElementById('res-rank-title').innerText = rankTitle;
+            document.getElementById('res-badge-icon').className = `fa-solid ${rankIcon} text-4xl text-slate-950`;
+            document.getElementById('res-badge-bg').className = `w-24 h-24 rounded-full bg-gradient-to-tr ${badgeBg} flex items-center justify-center mx-auto shadow-xl`;
+
+            // Save to Local Leaderboard
+            saveToLeaderboard({
+                name: playerName,
+                class: playerClass,
+                score: score,
+                accuracy: accuracyPercent,
+                date: new Date().toLocaleDateString('ms-MY')
+            });
+        }
+
+        // Local Storage Leaderboard Logic
+        function saveToLeaderboard(entry) {
+            let leaderboard = JSON.parse(localStorage.getItem('sc_acid_alkali_lb') || '[]');
+            leaderboard.push(entry);
+            // Sort by score descending
+            leaderboard.sort((a, b) => b.score - a.score);
+            // Keep top 10
+            leaderboard = leaderboard.slice(0, 10);
+            localStorage.setItem('sc_acid_alkali_lb', JSON.stringify(leaderboard));
+        }
+
+        function showLeaderboardModal() {
+            playSound('click');
+            const leaderboard = JSON.parse(localStorage.getItem('sc_acid_alkali_lb') || '[]');
+            const listContainer = document.getElementById('leaderboard-list');
+            listContainer.innerHTML = '';
+
+            if (leaderboard.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada rekod. Jadilah yang pertama!</p>';
+            } else {
+                leaderboard.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between items-center p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 text-xs';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-yellow-400 text-slate-950 font-bold' : 'bg-slate-700 text-slate-300'} flex items-center justify-center font-display">
+                                ${idx + 1}
+                            </span>
+                            <div>
+                                <p class="font-bold text-white">${item.name}</p>
+                                <p class="text-[10px] text-slate-400">${item.class} • ${item.accuracy}% Tepat</p>
+                            </div>
+                        </div>
+                        <span class="font-mono font-bold text-emerald-400 text-sm">${item.score} pts</span>
+                    `;
+                    listContainer.appendChild(row);
+                });
+            }
+
+            document.getElementById('modal-leaderboard').classList.remove('hidden');
+        }
+
+        function closeLeaderboardModal() {
+            playSound('click');
+            document.getElementById('modal-leaderboard').classList.add('hidden');
+        }
+
+        // WhatsApp Share Generator
+        function shareToWhatsApp() {
+            const accuracyPercent = Math.round((answersHistory.filter(a => a.isCorrect).length / questionsDatabase.length) * 100);
+            const rankTitle = document.getElementById('res-rank-title').innerText;
+
+            const text = `🧪 *CABARAN SAINS TINGKATAN 2: ASID DAN ALKALI* 🧪\n\n` +
+                         `👤 *Nama:* ${playerName} (${playerClass})\n` +
+                         `🏆 *Markah:* ${score} Mata\n` +
+                         `🎯 *Ketepatan:* ${accuracyPercent}%\n` +
+                         `🎖️ *Gelaran:* ${rankTitle}\n\n` +
+                         `Boleh tak anda tewaskan rekod saya dalam bab Asid dan Alkali? Jom cabar diri sekarang! 🚀`;
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        // Restart Game
+        function restartGame() {
+            playSound('click');
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-start').classList.remove('hidden');
+        }
+
+        // Initial setup on window load
+        window.onload = function() {
+            generateBubbles();
+        };
+    </script>
+</body>
+</html>
